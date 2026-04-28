@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 
 type GameState = "playing" | "solved";
 type GridMap = Record<string, string[][]>;
@@ -36,60 +36,66 @@ function* permutations(arr: number[]): Generator<number[]> {
 
 const GRID_KEYS = ["Names-Colors", "Names-Pets", "Colors-Pets"];
 
+type PuzzleData = {
+  items: Record<string, string[]>;
+  allClues: Clue[];
+  expected: GridMap;
+  grids: GridMap;
+};
+
+function buildPuzzle(): PuzzleData {
+  const names = shuffle(namePool).slice(0, 3);
+  const colors = shuffle(colorPool).slice(0, 3);
+  const pets = shuffle(petPool).slice(0, 3);
+
+  const colorPerm = shuffle([0, 1, 2]);
+  const petPerm = shuffle([0, 1, 2]);
+
+  const expected: GridMap = {};
+  GRID_KEYS.forEach((key) => {
+    expected[key] = Array(3).fill("").map(() => Array(3).fill("X"));
+  });
+  for (let i = 0; i < 3; i++) {
+    expected["Names-Colors"][i][colorPerm[i]] = "O";
+    expected["Names-Pets"][i][petPerm[i]] = "O";
+  }
+  for (let j = 0; j < 3; j++) {
+    const i = colorPerm.indexOf(j);
+    expected["Colors-Pets"][j][petPerm[i]] = "O";
+  }
+
+  const grids: GridMap = {};
+  GRID_KEYS.forEach((key) => {
+    grids[key] = Array(3).fill("").map(() => Array(3).fill(""));
+  });
+
+  const clues: Clue[] = [];
+  for (let i = 0; i < 3; i++) {
+    clues.push({ type: "positive", cat1: "Names", idx1: i, cat2: "Colors", idx2: colorPerm[i] });
+    clues.push({ type: "positive", cat1: "Names", idx1: i, cat2: "Pets", idx2: petPerm[i] });
+    clues.push({ type: "positive", cat1: "Colors", idx1: i, cat2: "Pets", idx2: petPerm[colorPerm.indexOf(i)] });
+    clues.push({ type: "negative", cat1: "Names", idx1: i, cat2: "Colors", idx2: (colorPerm[i] + 1) % 3 });
+    clues.push({ type: "negative", cat1: "Names", idx1: i, cat2: "Pets", idx2: (petPerm[i] + 1) % 3 });
+    clues.push({ type: "negative", cat1: "Colors", idx1: i, cat2: "Pets", idx2: (petPerm[colorPerm.indexOf(i)] + 1) % 3 });
+  }
+
+  return { items: { Names: names, Colors: colors, Pets: pets }, expected, grids, allClues: shuffle(clues) };
+}
+
 export default function LogicGridPuzzleGame() {
   const [gameState, setGameState] = useState<GameState>("playing");
-  const [items, setItems] = useState<Record<string, string[]>>({ Names: [], Colors: [], Pets: [] });
-  const [allClues, setAllClues] = useState<Clue[]>([]);
+  const [puzzle, setPuzzle] = useState<PuzzleData>(buildPuzzle);
   const [visibleClueCount, setVisibleClueCount] = useState(4);
-  const [expected, setExpected] = useState<GridMap>({});
-  const [grids, setGrids] = useState<GridMap>({});
   const [resultMessage, setResultMessage] = useState<{ text: string; success: boolean } | null>(null);
 
+  const { items, allClues, expected, grids } = puzzle;
+
   const generatePuzzle = () => {
-    const names = shuffle(namePool).slice(0, 3);
-    const colors = shuffle(colorPool).slice(0, 3);
-    const pets = shuffle(petPool).slice(0, 3);
-    setItems({ Names: names, Colors: colors, Pets: pets });
-
-    const colorPerm = shuffle([0, 1, 2]);
-    const petPerm = shuffle([0, 1, 2]);
-
-    const newExpected: GridMap = {};
-    GRID_KEYS.forEach((key) => {
-      newExpected[key] = Array(3).fill("").map(() => Array(3).fill("X"));
-    });
-    for (let i = 0; i < 3; i++) {
-      newExpected["Names-Colors"][i][colorPerm[i]] = "O";
-      newExpected["Names-Pets"][i][petPerm[i]] = "O";
-    }
-    for (let j = 0; j < 3; j++) {
-      const i = colorPerm.indexOf(j);
-      newExpected["Colors-Pets"][j][petPerm[i]] = "O";
-    }
-    setExpected(newExpected);
-
-    const newGrids: GridMap = {};
-    GRID_KEYS.forEach((key) => {
-      newGrids[key] = Array(3).fill("").map(() => Array(3).fill(""));
-    });
-    setGrids(newGrids);
-
-    const clues: Clue[] = [];
-    for (let i = 0; i < 3; i++) {
-      clues.push({ type: "positive", cat1: "Names", idx1: i, cat2: "Colors", idx2: colorPerm[i] });
-      clues.push({ type: "positive", cat1: "Names", idx1: i, cat2: "Pets", idx2: petPerm[i] });
-      clues.push({ type: "positive", cat1: "Colors", idx1: i, cat2: "Pets", idx2: petPerm[colorPerm.indexOf(i)] });
-      clues.push({ type: "negative", cat1: "Names", idx1: i, cat2: "Colors", idx2: (colorPerm[i] + 1) % 3 });
-      clues.push({ type: "negative", cat1: "Names", idx1: i, cat2: "Pets", idx2: (petPerm[i] + 1) % 3 });
-      clues.push({ type: "negative", cat1: "Colors", idx1: i, cat2: "Pets", idx2: (petPerm[colorPerm.indexOf(i)] + 1) % 3 });
-    }
-    setAllClues(shuffle(clues));
+    setPuzzle(buildPuzzle());
     setVisibleClueCount(4);
     setGameState("playing");
     setResultMessage(null);
   };
-
-  useEffect(() => { generatePuzzle(); }, []);
 
   const isInsufficient = () => {
     const visible = allClues.slice(0, visibleClueCount);
@@ -119,11 +125,11 @@ export default function LogicGridPuzzleGame() {
 
   const toggleCell = (gridKey: string, row: number, col: number) => {
     if (gameState !== "playing") return;
-    setGrids((prev) => {
-      const newGrid = prev[gridKey].map((r) => [...r]);
+    setPuzzle((prev) => {
+      const newGrid = prev.grids[gridKey].map((r) => [...r]);
       const cur = newGrid[row][col];
       newGrid[row][col] = cur === "" ? "O" : cur === "O" ? "X" : "";
-      return { ...prev, [gridKey]: newGrid };
+      return { ...prev, grids: { ...prev.grids, [gridKey]: newGrid } };
     });
   };
 
