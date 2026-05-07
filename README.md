@@ -1,36 +1,131 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧠 Brain Training
+
+A collection of fun, browser-based brain-training mini-games built with **Next.js 16**, **React 19**, **TypeScript**, and **Tailwind CSS v4**.
+
+---
+
+## Games
+
+| Game | Route | Description |
+|---|---|---|
+| 🎨 **Memorize the Sequence** | `/games/memorize-sequence` | Watch colored buttons light up in a sequence, then repeat the pattern from memory. Adjust the sequence length (1–20) for more challenge. |
+| 🔵 **Quick Count** | `/games/quick-count` | A scatter of blue circles flashes for 2 seconds — count them before they disappear. The number increases as your score grows. |
+| 🧩 **Logic Grid Puzzle** | `/games/logic-grid` | Use deductive clues to match people ↔ house colors ↔ pets. A classic Einstein-style brain teaser with a randomised puzzle each round. |
+
+---
+
+## Tech Stack
+
+- **Framework:** [Next.js 16](https://nextjs.org) (App Router)
+- **UI:** [React 19](https://react.dev) + [TypeScript 5](https://www.typescriptlang.org)
+- **Styling:** [Tailwind CSS v4](https://tailwindcss.com)
+- **Fonts:** Geist Sans & Geist Mono via `next/font/google`
+- **Linting:** ESLint 9 with `eslint-config-next`
+
+---
+
+## Project Structure
+
+```
+app/
+├── layout.tsx                  # Root layout (fonts, global CSS)
+├── page.tsx                    # Home dashboard (game card grid)
+├── globals.css                 # Global Tailwind styles
+├── components/
+│   ├── GameCard.tsx             # Reusable game card link component
+│   └── games/
+│       ├── MemorizeSequenceGame.tsx
+│       ├── QuickCountGame.tsx
+│       └── LogicGridPuzzleGame.tsx
+└── games/
+    ├── memorize-sequence/page.tsx
+    ├── quick-count/page.tsx
+    └── logic-grid/page.tsx
+```
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm (or yarn / pnpm / bun)
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+### Run the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Available Scripts
 
-## Learn More
+| Command | Description |
+|---|---|
+| `npm run dev` | Start the development server with hot reload |
+| `npm run build` | Create an optimised production build |
+| `npm run start` | Serve the production build locally |
+| `npm run lint` | Run ESLint across the project |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Adding a New Game
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Create the game component** in `app/components/games/YourGame.tsx`.  
+   Add `"use client";` at the top if the component uses React state or browser APIs.
 
-## Deploy on Vercel
+2. **Create the route page** at `app/games/your-game/page.tsx`:
+   ```tsx
+   import Link from "next/link";
+   import YourGame from "../../components/games/YourGame";
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   export default function YourGamePage() {
+     return (
+       <div className="min-h-screen bg-<color>-50">
+         <nav className="px-6 py-4 border-b bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+           <Link href="/" className="text-<color>-600 font-medium hover:text-<color>-800 transition">
+             ← Back to Dashboard
+           </Link>
+         </nav>
+         <main className="max-w-2xl mx-auto py-8">
+           <YourGame />
+         </main>
+       </div>
+     );
+   }
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. **Register the game card** in `app/page.tsx` by adding an entry to the `GAMES` array:
+   ```ts
+   {
+     href: "/games/your-game",
+     emoji: "🎮",
+     title: "Your Game Title",
+     description: "Short description shown on the home card.",
+     color: "bg-<color>-50 hover:bg-<color>-100",
+   }
+   ```
+
+---
+
+## Deployment
+
+The easiest way to deploy is [Vercel](https://vercel.com):
+
+```bash
+npx vercel
+```
+
+Or push to a GitHub repository connected to Vercel for automatic deployments on every push.
+
+See the [Next.js deployment docs](https://nextjs.org/docs/app/building-your-application/deploying) for other hosting options.
