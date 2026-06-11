@@ -25,6 +25,14 @@ const GAMES = [
       "Use deductive clues to match people with their house colors and pets. A classic brain teaser!",
     color: "bg-amber-50 hover:bg-amber-100",
   },
+  {
+    href: "/games/natural-deduction",
+    emoji: "🔗",
+    title: "Natural Deduction",
+    description:
+      "Apply logical inference rules step-by-step to derive conclusions from premises. 10 progressive puzzles!",
+    color: "bg-violet-50 hover:bg-violet-100",
+  },
 ];
 
 export default function Home() {
