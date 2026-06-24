@@ -41,6 +41,14 @@ const GAMES = [
       "Wait for green, then click as fast as possible. Track your reaction speed and beat your best time.",
     color: "bg-emerald-50 hover:bg-emerald-100",
   },
+  {
+    href: "/games/stroop",
+    emoji: "🟥",
+    title: "Stroop Sprint",
+    description:
+      "Click only when the word matches the ink color. A fast attention-and-inhibition drill.",
+    color: "bg-rose-50 hover:bg-rose-100",
+  },
 ];
 
 export default function Home() {

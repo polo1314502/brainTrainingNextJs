@@ -12,6 +12,7 @@ A collection of fun, browser-based brain-training mini-games built with **Next.j
 | 🔵 **Quick Count** | `/games/quick-count` | A scatter of blue circles flashes for 2 seconds — count them before they disappear. The number increases as your score grows. |
 | 🧩 **Logic Grid Puzzle** | `/games/logic-grid` | Use deductive clues to match people ↔ house colors ↔ pets. A classic Einstein-style brain teaser with a randomised puzzle each round. |
 | ⚡ **Reflection Training** | `/games/reflection` | Wait for green, then click as fast as possible. Avoid false starts and try to beat your best reaction time. |
+| 🟥 **Stroop Sprint** | `/games/stroop` | Click only when the word matches the ink color. Train attention control and inhibition under pressure. |
 
 ---
 
@@ -39,13 +40,15 @@ app/
 │       ├── QuickCountGame.tsx
 │       ├── LogicGridPuzzleGame.tsx
 │       ├── NaturalDeductionGame.tsx
-│       └── ReflectionGame.tsx
+│       ├── ReflectionGame.tsx
+│       └── StroopSprintGame.tsx
 └── games/
     ├── memorize-sequence/page.tsx
     ├── quick-count/page.tsx
     ├── logic-grid/page.tsx
     ├── natural-deduction/page.tsx
-    └── reflection/page.tsx
+    ├── reflection/page.tsx
+    └── stroop/page.tsx
 ```
 
 ---
