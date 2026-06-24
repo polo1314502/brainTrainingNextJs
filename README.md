@@ -11,6 +11,7 @@ A collection of fun, browser-based brain-training mini-games built with **Next.j
 | 🎨 **Memorize the Sequence** | `/games/memorize-sequence` | Watch colored buttons light up in a sequence, then repeat the pattern from memory. Adjust the sequence length (1–20) for more challenge. |
 | 🔵 **Quick Count** | `/games/quick-count` | A scatter of blue circles flashes for 2 seconds — count them before they disappear. The number increases as your score grows. |
 | 🧩 **Logic Grid Puzzle** | `/games/logic-grid` | Use deductive clues to match people ↔ house colors ↔ pets. A classic Einstein-style brain teaser with a randomised puzzle each round. |
+| ⚡ **Reflection Training** | `/games/reflection` | Wait for green, then click as fast as possible. Avoid false starts and try to beat your best reaction time. |
 
 ---
 
@@ -36,11 +37,15 @@ app/
 │   └── games/
 │       ├── MemorizeSequenceGame.tsx
 │       ├── QuickCountGame.tsx
-│       └── LogicGridPuzzleGame.tsx
+│       ├── LogicGridPuzzleGame.tsx
+│       ├── NaturalDeductionGame.tsx
+│       └── ReflectionGame.tsx
 └── games/
     ├── memorize-sequence/page.tsx
     ├── quick-count/page.tsx
-    └── logic-grid/page.tsx
+    ├── logic-grid/page.tsx
+    ├── natural-deduction/page.tsx
+    └── reflection/page.tsx
 ```
 
 ---

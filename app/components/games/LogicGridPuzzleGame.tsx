@@ -35,6 +35,8 @@ function* permutations(arr: number[]): Generator<number[]> {
 }
 
 const GRID_KEYS = ["Names-Colors", "Names-Pets", "Colors-Pets"];
+const INITIAL_SCORE = 100;
+const EXTRA_CLUE_PENALTY = 10;
 
 type PuzzleData = {
   items: Record<string, string[]>;
@@ -86,6 +88,7 @@ export default function LogicGridPuzzleGame() {
   const [gameState, setGameState] = useState<GameState>("playing");
   const [puzzle, setPuzzle] = useState<PuzzleData>(buildPuzzle);
   const [visibleClueCount, setVisibleClueCount] = useState(4);
+  const [score, setScore] = useState(INITIAL_SCORE);
   const [resultMessage, setResultMessage] = useState<{ text: string; success: boolean } | null>(null);
 
   const { items, allClues, expected, grids } = puzzle;
@@ -93,6 +96,7 @@ export default function LogicGridPuzzleGame() {
   const generatePuzzle = () => {
     setPuzzle(buildPuzzle());
     setVisibleClueCount(4);
+    setScore(INITIAL_SCORE);
     setGameState("playing");
     setResultMessage(null);
   };
@@ -142,10 +146,22 @@ export default function LogicGridPuzzleGame() {
     }
     if (solved) {
       setGameState("solved");
-      setResultMessage({ text: "🎉 Congratulations! You solved the puzzle!", success: true });
+      setResultMessage({ text: `🎉 Congratulations! You solved the puzzle! Final score: ${score}.`, success: true });
     } else {
       setResultMessage({ text: "❌ Not quite right. Check the clues and try again.", success: false });
     }
+  };
+
+  const handleShowMoreClues = () => {
+    if (visibleClueCount >= allClues.length) return;
+
+    const cluesAlreadyEnough = !isInsufficient();
+    setVisibleClueCount((n) => n + 1);
+
+    if (gameState !== "playing" || !cluesAlreadyEnough) return;
+
+    setScore((prev) => Math.max(0, prev - EXTRA_CLUE_PENALTY));
+    setResultMessage({ text: `⚠️ Extra clue wasn't needed: -${EXTRA_CLUE_PENALTY} points.`, success: false });
   };
 
   const clueText = (clue: Clue) => {
@@ -215,6 +231,11 @@ export default function LogicGridPuzzleGame() {
   return (
     <div className="max-w-xl mx-auto p-6">
       <h1 className="text-3xl font-bold text-gray-800 text-center mb-2">Logic Grid Puzzle</h1>
+      <p className="text-center mb-2">
+        <span className="inline-flex items-center rounded-full bg-indigo-100 text-indigo-800 text-sm font-semibold px-3 py-1">
+          Score: {score}
+        </span>
+      </p>
       <p className="text-gray-500 text-center mb-6 text-sm">
         Use the clues to determine which person has which color house and pet. Click a cell to toggle ⭕ (match) or ❌ (no match).
       </p>
@@ -231,10 +252,11 @@ export default function LogicGridPuzzleGame() {
             </li>
           ))}
         </ol>
-        {visibleClueCount < allClues.length && isInsufficient() && (
+        {visibleClueCount < allClues.length && (
           <button
-            onClick={() => setVisibleClueCount((n) => n + 1)}
-            className="mt-3 px-4 py-1.5 bg-amber-200 hover:bg-amber-300 rounded-full text-sm font-medium text-amber-800 transition"
+            onClick={handleShowMoreClues}
+            disabled={gameState === "solved"}
+            className="mt-3 px-4 py-1.5 bg-amber-200 hover:bg-amber-300 rounded-full text-sm font-medium text-amber-800 transition disabled:opacity-60 disabled:cursor-not-allowed"
           >
             + Show More Clues
           </button>

@@ -33,6 +33,14 @@ const GAMES = [
       "Apply logical inference rules step-by-step to derive conclusions from premises. 10 progressive puzzles!",
     color: "bg-violet-50 hover:bg-violet-100",
   },
+  {
+    href: "/games/reflection",
+    emoji: "⚡",
+    title: "Reflection Training",
+    description:
+      "Wait for green, then click as fast as possible. Track your reaction speed and beat your best time.",
+    color: "bg-emerald-50 hover:bg-emerald-100",
+  },
 ];
 
 export default function Home() {
