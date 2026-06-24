@@ -49,6 +49,14 @@ const GAMES = [
       "Click only when the word matches the ink color. A fast attention-and-inhibition drill.",
     color: "bg-rose-50 hover:bg-rose-100",
   },
+  {
+    href: "/games/mastermind",
+    emoji: "🎯",
+    title: "Mastermind",
+    description:
+      "Crack the hidden 4-color code in 10 turns. Use exact and partial feedback to narrow it down.",
+    color: "bg-fuchsia-50 hover:bg-fuchsia-100",
+  },
 ];
 
 export default function Home() {
